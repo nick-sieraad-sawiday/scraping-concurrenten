@@ -1,22 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Scrape Private Labels
-
-# ## General info
-
-# Author: Nick Sieraad
-
-# Date: July 2021
-
-# Goal: Scrape the websites of competitors to know their private labels and match with ours.
-
-# ## General imports
-
-# In[2]:
-
-
-# general imports
 import csv
 from time import sleep
 import datetime
