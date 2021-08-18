@@ -116,8 +116,6 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
         ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs', 'levertijd']]
     x2o['prijs'] = x2o['prijs'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
 
-    print(x2o.head(5))
-
     return x2o
 
 
