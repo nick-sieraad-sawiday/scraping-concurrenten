@@ -4,7 +4,7 @@ from time import sleep
 
 import pandas as pd
 from requests_html import HTMLSession
-from connections import get_data
+from src.connections import get_data
 
 warnings.filterwarnings("ignore")
 
