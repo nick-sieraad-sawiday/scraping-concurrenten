@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 all_rows = []
 
 
-def get_price_tegeldepot(response) -> float:
+def get_price_tegeldepot(response):
     """ Extracts the price from the product
 
     :param response: The connection with the website of the competitor
@@ -20,12 +20,15 @@ def get_price_tegeldepot(response) -> float:
     try:
         price = response.html.find('.special-price')[0].text.split(' ')[1]
     except:
-        price = response.html.find('.regular-price')[0].text
+        try:
+            price = response.html.find('.regular-price')[0].text
+        except:
+            price = response.html.find('.price-holder')[0].text.split(' ')[1]
 
     if '-' in price:
         price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace(',-', '.'))
     else:
-        price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace(',', '.'))
+        price = float(price.replace(u'\xa0', u' ').replace('.', '').replace('€ ', '').replace(',', '.'))
 
     return price
 
