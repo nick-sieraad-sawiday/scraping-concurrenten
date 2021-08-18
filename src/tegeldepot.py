@@ -100,13 +100,15 @@ def product_specs_tegeldepot(sku: str, url: str):
         else:
             row.append("")
 
+        row.append(url)
+
         all_rows.append(row)
 
     except:
         if response.status_code != 200:
             sleep(10)
         print(response.status_code)
-        row = [response.status_code, '', '', '', '', '', response.url]
+        row = [sku, '', '', '', '', '', response.status_code, '', '', '', response.url]
         all_rows.append(row)
 
 
@@ -118,14 +120,12 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     """
     tegeldepot = pd.DataFrame(all_rows,
                               columns=['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'art_nr_tegeldepot',
-                                       'ean', 'merk', 'serie'])
+                                       'ean', 'merk', 'serie', 'url'])
     tegeldepot['levertijd'] = [''] * len(tegeldepot)
     tegeldepot = tegeldepot[
         ['sku', 'art_nr_tegeldepot', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-         'levertijd']
+         'levertijd', 'url']
     ]
-
-    print(tegeldepot.head(5))
 
     return tegeldepot
 
@@ -140,7 +140,10 @@ def main():
     """
     swnl, product_urls = get_data("tegeldepot")
     visit_product_page(5, swnl, product_urls, product_specs_tegeldepot)
-    create_dataframe(all_rows)
+    tegeldepot = create_dataframe(all_rows)
+    tegeldepot.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

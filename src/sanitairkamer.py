@@ -82,7 +82,7 @@ def product_specs_sanitairkamer(sku, url):
         if response.status_code != 200:
             sleep(10)
         print(response.status_code)
-        row = [response.status_code, '', '', '', '', response.url]
+        row = [sku, '', response.status_code, '', '', '', response.url]
         all_rows.append(row)
 
 
@@ -92,17 +92,17 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     :param all_rows: The extracted products from the competitor
     :return: A dataframe that contains the product info of the competitor
     """
-    sanitairkamer = pd.DataFrame(all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs'])
+    sanitairkamer = pd.DataFrame(
+        all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs', 'url']
+    )
     sanitairkamer['ean'] = [''] * len(sanitairkamer)
     sanitairkamer['main_categorie'] = [''] * len(sanitairkamer)
     sanitairkamer['sub_categorie'] = [''] * len(sanitairkamer)
     sanitairkamer['levertijd'] = [''] * len(sanitairkamer)
     sanitairkamer = sanitairkamer[
         ['sku', 'art_nr_sanitairkamer', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-         'levertijd']
+         'levertijd', 'url']
     ]
-
-    print(sanitairkamer.head(5))
 
     return sanitairkamer
 
@@ -117,7 +117,10 @@ def main():
     """
     swnl, product_urls = get_data("sanitairkamer")
     visit_product_page(5, swnl, product_urls, product_specs_sanitairkamer)
-    create_dataframe(all_rows)
+    sanitairkamer = create_dataframe(all_rows)
+    sanitairkamer.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

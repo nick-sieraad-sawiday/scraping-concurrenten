@@ -103,6 +103,8 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
         delivery_time = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
         row.append(delivery_time)
 
+        row.append(url)
+
         all_rows.append(row)
 
     return all_rows
@@ -110,10 +112,12 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
 
 def create_dataframe(all_rows: list) -> pd.DataFrame:
     columns_x2o = ['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'merk', 'serie', 'ean', 'art_nr_conc',
-                   'levertijd']
+                   'levertijd', 'url']
     x2o = pd.DataFrame(all_rows, columns=columns_x2o)
     x2o = x2o[
-        ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs', 'levertijd']]
+        ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie',
+         'prijs', 'levertijd', 'url']
+    ]
     x2o['prijs'] = x2o['prijs'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
 
     return x2o
@@ -130,7 +134,10 @@ def main():
     swnl, product_urls_x2o = get_data("x2o")
     driver = start_driver()
     all_rows = get_products_x2o(driver, swnl, product_urls_x2o)
-    create_dataframe(all_rows)
+    x2o = create_dataframe(all_rows)
+    x2o.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

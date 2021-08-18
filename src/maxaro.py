@@ -79,16 +79,16 @@ def product_specs_maxaro(sku: str, url: str):
         price = get_price_maxaro(response)
         row.append(price)
 
+        row.append(url)
+
         all_rows.append(row)
 
     except:
         if response.status_code != 200:
             sleep(10)
         print(response.status_code)
-        row = [response.status_code, '', '', '', '', '', response.url]
+        row = [sku, response.status_code, '', '', '', '', response.url]
         all_rows.append(row)
-
-    return all_rows
 
 
 def create_dataframe(all_rows: list) -> pd.DataFrame:
@@ -98,7 +98,7 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     :return: A dataframe that contains the product info of the competitor
     """
     maxaro = pd.DataFrame(
-        all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie', 'prijs']
+        all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie', 'prijs', 'url']
     )
     maxaro['ean'] = [''] * len(maxaro)
     maxaro['merk'] = ['Maxaro'] * len(maxaro)
@@ -106,10 +106,8 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     maxaro['levertijd'] = [''] * len(maxaro)
     maxaro = maxaro[
         ['sku', 'art_nr_maxaro', 'ean', 'naam', 'merk', 'serie', 'main_categorie',
-         'sub_categorie', 'prijs', 'levertijd']
+         'sub_categorie', 'prijs', 'levertijd', 'url']
     ]
-
-    print(maxaro.head(5))
 
     return maxaro
 
@@ -122,10 +120,12 @@ def main():
         - visit_product_page
         - create_dataframe
     """
-
     swnl, product_urls = get_data("maxaro")
     visit_product_page(5, swnl, product_urls, product_specs_maxaro)
-    create_dataframe(all_rows)
+    maxaro = create_dataframe(all_rows)
+    maxaro.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":
