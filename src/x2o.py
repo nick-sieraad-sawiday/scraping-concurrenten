@@ -7,31 +7,29 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
+from src.maxaro import get_data
+
 warnings.filterwarnings("ignore")
 
 
-def get_data():
-
-    private_label_conc = pd.read_excel("private_label_omzet.xlsx")
-    x2o = private_label_conc[private_label_conc["x2o"] != "geen alternatief"]
-    product_urls_x2o = list(x2o["x2o"].dropna())
-    swnl = list(x2o["productcode_match"][:len(product_urls_x2o)])
-
-    return product_urls_x2o, swnl
-
-
 def start_driver():
+    """ Starts the driver that visits the pages
 
-    driver = webdriver.PhantomJS()
-    driver = webdriver.Chrome()
+    :return: The driver
+    """
+    # driver = webdriver.PhantomJS()
+    driver = webdriver.Chrome(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\executables\\chromedriver.exe"
+    )
 
     return driver
 
 
 def wait(driver, selector, element):
-    """
-    Function that waits till element is detected
+    """ Function that waits till element is detected
 
+    :param driver: The driver that visits the pages
     :param selector: The selector, e.g. by class_name
     :param element: The element that needs to be detected
     :return:
@@ -44,11 +42,19 @@ def wait(driver, selector, element):
         print("wait Loading took too much time!")
 
 
-def get_products(driver, swnl, product_urls_x2o):
+def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
+    """ Extracts the specifications of the products of the competitor
+
+    :param driver: The driver that visits the pages
+    :param swnl: List with our sku's
+    :param product_urls_x2o: List with the url's of the products of the competitor
+    :return: List with all the products of the competitor
+    """
 
     all_rows = []
     for sku, url in zip(swnl, product_urls_x2o):
 
+        print(url)
         row = [sku]
 
         driver.get(url)
@@ -83,28 +89,27 @@ def get_products(driver, swnl, product_urls_x2o):
         row.append(main_cat)
         row.append(sub_cat)
 
-        merk = driver.find_elements_by_xpath("//*[contains(@id,'Merk')]")[0].get_attribute('id').split('-')[1]
-        row.append(merk)
+        brand = driver.find_elements_by_xpath("//*[contains(@id,'Merk')]")[0].get_attribute('id').split('-')[1]
+        row.append(brand)
 
         serie = driver.find_elements_by_xpath("//*[contains(@id,'Reeks')]")[0].get_attribute('id').split('-')[1]
         row.append(serie)
 
-        EAN = driver.find_elements_by_xpath("//*[contains(@id,'Barcode')]")[0].get_attribute('id').split('-')[1]
-        row.append(EAN)
+        ean = driver.find_elements_by_xpath("//*[contains(@id,'Barcode')]")[0].get_attribute('id').split('-')[1]
+        row.append(ean)
 
         sku = driver.find_elements_by_xpath("//*[contains(@id,'WebSKU')]")[0].get_attribute('id').split('-')[1]
         row.append(sku)
 
-        levertijd = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
-        row.append(levertijd)
+        delivery_time = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
+        row.append(delivery_time)
 
         all_rows.append(row)
 
     return all_rows
 
 
-def create_dataframe(all_rows):
-
+def create_dataframe(all_rows: list) -> pd.DataFrame:
     columns_x2o = ['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'merk', 'serie', 'ean', 'art_nr_conc',
                    'levertijd']
     x2o = pd.DataFrame(all_rows, columns=columns_x2o)
@@ -112,15 +117,23 @@ def create_dataframe(all_rows):
         ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs', 'levertijd']]
     x2o['prijs'] = x2o['prijs'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
 
+    print(x2o.head(5))
+
     return x2o
 
 
 def main():
+    """ Main function
 
-    product_urls_x2o, swnl = get_data()
+    Runs:
+        - get_data
+        - visit_product_page
+        - create_dataframe
+    """
+    swnl, product_urls_x2o = get_data("x2o")
     driver = start_driver()
-    all_rows = get_products(driver, swnl, product_urls_x2o)
-    x2o = create_dataframe(all_rows)
+    all_rows = get_products_x2o(driver, swnl, product_urls_x2o)
+    create_dataframe(all_rows)
 
 
 if __name__ == "__main__":

@@ -2,17 +2,18 @@ import warnings
 from time import sleep
 
 import pandas as pd
-from src.maxaro import visit_product_page, start_session
+
+from src.maxaro import visit_product_page, start_session, get_data
 
 warnings.filterwarnings("ignore")
 
-private_label_conc = pd.read_excel("private_label_omzet.xlsx")
-tegeldepot = private_label_conc[private_label_conc["tegeldepot"] != "geen alternatief"]
-product_urls_tegeldepot = list(tegeldepot["tegeldepot"].dropna())
-swnl = list(tegeldepot["productcode_match"][:len(product_urls_tegeldepot)])
 
+def get_price_tegeldepot(response) -> float:
+    """ Extracts the price from the product
 
-def get_price_tegeldepot(response):
+    :param response: The connection with the website of the competitor
+    :return: The price of the product of the competitor
+    """
     try:
         price = response.html.find('.special-price')[0].text.split(' ')[1]
     except:
@@ -26,7 +27,12 @@ def get_price_tegeldepot(response):
     return price
 
 
-def product_specs_tegeldepot(sku, url):
+def product_specs_tegeldepot(sku: str, url: str):
+    """ Extracts the specifications of the products of the competitor
+
+    :param sku: Our sku
+    :param url: The url of the alternative product of the competitor
+    """
     try:
         # starts session and 'visits' product page
         response = start_session(url)
@@ -101,14 +107,39 @@ def product_specs_tegeldepot(sku, url):
         all_rows.append(row)
 
 
-all_rows = []
-# visits the product pages
-visit_product_page(5, swnl, product_urls_tegeldepot, product_specs_tegeldepot)
+def create_dataframe(all_rows: list) -> pd.DataFrame:
+    """ Creates a dataframe
 
-tegeldepot = pd.DataFrame(all_rows,
-                          columns=['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'art_nr_tegeldepot',
-                                   'ean', 'merk', 'serie'])
-tegeldepot['levertijd'] = [''] * len(tegeldepot)
-tegeldepot = tegeldepot[
-    ['sku', 'art_nr_tegeldepot', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-     'levertijd']]
+    :param all_rows: The extracted products from the competitor
+    :return: A dataframe that contains the product info of the competitor
+    """
+    tegeldepot = pd.DataFrame(all_rows,
+                              columns=['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'art_nr_tegeldepot',
+                                       'ean', 'merk', 'serie'])
+    tegeldepot['levertijd'] = [''] * len(tegeldepot)
+    tegeldepot = tegeldepot[
+        ['sku', 'art_nr_tegeldepot', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
+         'levertijd']
+    ]
+
+    print(tegeldepot.head(5))
+
+    return tegeldepot
+
+
+def main():
+    """ Main function
+
+    Runs:
+        - get_data
+        - visit_product_page
+        - create_dataframe
+    """
+    swnl, product_urls = get_data("tegeldepot")
+    visit_product_page(5, swnl, product_urls, product_specs_tegeldepot)
+    create_dataframe(all_rows)
+
+
+if __name__ == "__main__":
+    all_rows = []
+    main()

@@ -2,16 +2,17 @@ import warnings
 from time import sleep
 
 import pandas as pd
-from src.maxaro import visit_product_page, start_session
-warnings.filterwarnings("ignore")
+from src.maxaro import visit_product_page, start_session, get_data
 
-private_label_conc = pd.read_excel("private_label_omzet.xlsx")
-sanitairkamer = private_label_conc[private_label_conc["sanitairkamer"] != "geen alternatief"]
-product_urls_sanitairkamer = list(sanitairkamer["sanitairkamer"].dropna())
-swnl = list(sanitairkamer["productcode_match"][:len(product_urls_sanitairkamer)])
+warnings.filterwarnings("ignore")
 
 
 def get_price_sanitairkamer(response):
+    """ Extracts the price from the product
+
+    :param response: The connection with the website of the competitor
+    :return: The price of the product of the competitor
+    """
     try:
         price = response.html.find('.minimal-price')[0].text.split(' ')[1]
     except:
@@ -29,6 +30,11 @@ def get_price_sanitairkamer(response):
 
 
 def product_specs_sanitairkamer(sku, url):
+    """ Extracts the specifications of the products of the competitor
+
+    :param sku: Our sku
+    :param url: The url of the alternative product of the competitor
+    """
     try:
         # starts session and 'visits' product page
         response = start_session(url)
@@ -77,14 +83,40 @@ def product_specs_sanitairkamer(sku, url):
         all_rows.append(row)
 
 
-all_rows = []
-visit_product_page(5, swnl, product_urls_sanitairkamer, product_specs_sanitairkamer)
+def create_dataframe(all_rows: list) -> pd.DataFrame:
+    """ Creates a dataframe
 
-sanitairkamer = pd.DataFrame(all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs'])
-sanitairkamer['ean'] = [''] * len(sanitairkamer)
-sanitairkamer['main_categorie'] = [''] * len(sanitairkamer)
-sanitairkamer['sub_categorie'] = [''] * len(sanitairkamer)
-sanitairkamer['levertijd'] = [''] * len(sanitairkamer)
-sanitairkamer = sanitairkamer[
-    ['sku', 'art_nr_sanitairkamer', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-     'levertijd']]
+    :param all_rows: The extracted products from the competitor
+    :return: A dataframe that contains the product info of the competitor
+    """
+    sanitairkamer = pd.DataFrame(all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs'])
+    sanitairkamer['ean'] = [''] * len(sanitairkamer)
+    sanitairkamer['main_categorie'] = [''] * len(sanitairkamer)
+    sanitairkamer['sub_categorie'] = [''] * len(sanitairkamer)
+    sanitairkamer['levertijd'] = [''] * len(sanitairkamer)
+    sanitairkamer = sanitairkamer[
+        ['sku', 'art_nr_sanitairkamer', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
+         'levertijd']
+    ]
+
+    print(sanitairkamer.head(5))
+
+    return sanitairkamer
+
+
+def main():
+    """ Main function
+
+    Runs:
+        - get_data
+        - visit_product_page
+        - create_dataframe
+    """
+    swnl, product_urls = get_data("sanitairkamer")
+    visit_product_page(5, swnl, product_urls, product_specs_sanitairkamer)
+    create_dataframe(all_rows)
+
+
+if __name__ == "__main__":
+    all_rows = []
+    main()

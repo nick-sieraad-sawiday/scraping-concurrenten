@@ -1,17 +1,42 @@
+import os
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+from typing import Tuple
 
 import pandas as pd
+from dotenv import load_dotenv, find_dotenv
 from requests_html import HTMLSession
 
+from connections import load_ftp_excel
 
-private_label_conc = pd.read_excel("private_label_omzet.xlsx")
-maxaro = private_label_conc[private_label_conc["maxaro"] != "geen alternatief"]
-product_urls_maxaro = list(maxaro["maxaro"].dropna())
-swnl = list(maxaro["productcode_match"][:len(product_urls_maxaro)])
+warnings.filterwarnings("ignore")
+
+load_dotenv(find_dotenv())
 
 
-def get_price_maxaro(response):
+def get_data(competitor: str) -> Tuple[list, list]:
+    """ Extracts the data from the ftp server
+    It contains a table with our products with alternatives from the competitors
+
+    :return: (1) List with the url's of the products of the competitor (2) List with our sku's
+    """
+    private_label_conc = load_ftp_excel(
+        "private_label_omzet.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
+    )
+    df = private_label_conc[private_label_conc[competitor] != "geen alternatief"]
+    product_urls = list(df[competitor].dropna())
+    swnl = list(df["productcode_match"][:len(product_urls)])
+
+    return swnl, product_urls
+
+
+def get_price_maxaro(response) -> float:
+    """ Extracts the price from the product
+
+    :param response: The connection with the website of the competitor
+    :return: The price of the product of the competitor
+    """
     price = response.html.find('.product-detail-pricing')[0].text
 
     if '-' in price:
@@ -22,21 +47,38 @@ def get_price_maxaro(response):
     return price
 
 
-def visit_product_page(max_threads, swnl, product_urls, product_specs):
+def visit_product_page(max_threads: int, swnl: list, product_urls: list, product_specs):
+    """ Runs function simultaneously
+
+    :param max_threads: The maximum amount of threads
+    :param swnl: List with our sku's
+    :param product_urls: List with the url's of the products of the competitor
+    :param product_specs: The function that scrapes the competitor
+    """
     threads = min(max_threads, len(product_urls))
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         executor.map(product_specs, swnl, product_urls)
 
 
-def start_session(url):
+def start_session(url: str):
+    """ Starts a session with the website of the competitor
+
+    :param url: The url of the website of the competitor
+    :return: The connection with the website of the competitor
+    """
     session = HTMLSession()
     response = session.get(url)
 
     return response
 
 
-def product_specs_maxaro(sku, url):
+def product_specs_maxaro(sku: str, url: str):
+    """ Extracts the specifications of the products of the competitor
+
+    :param sku: Our sku
+    :param url: The url of the alternative product of the competitor
+    """
     try:
         # starts session and 'visits' product page
         response = start_session(url)
@@ -67,13 +109,42 @@ def product_specs_maxaro(sku, url):
         all_rows.append(row)
 
 
-all_rows = []
-visit_product_page(5, swnl, product_urls_maxaro, product_specs_maxaro)
+def create_dataframe(all_rows: list) -> pd.DataFrame:
+    """ Creates a dataframe
 
-maxaro = pd.DataFrame(all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie', 'prijs'])
-maxaro['ean'] = [''] * len(maxaro)
-maxaro['merk'] = ['Maxaro'] * len(maxaro)
-maxaro['serie'] = [''] * len(maxaro)
-maxaro['levertijd'] = [''] * len(maxaro)
-maxaro = maxaro[
-    ['sku', 'art_nr_maxaro', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs', 'levertijd']]
+    :param all_rows: The extracted products from the competitor
+    :return: A dataframe that contains the product info of the competitor
+    """
+    maxaro = pd.DataFrame(
+        all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie', 'prijs']
+    )
+    maxaro['ean'] = [''] * len(maxaro)
+    maxaro['merk'] = ['Maxaro'] * len(maxaro)
+    maxaro['serie'] = [''] * len(maxaro)
+    maxaro['levertijd'] = [''] * len(maxaro)
+    maxaro = maxaro[
+        ['sku', 'art_nr_maxaro', 'ean', 'naam', 'merk', 'serie', 'main_categorie',
+         'sub_categorie', 'prijs', 'levertijd']
+    ]
+
+    print(maxaro.head(5))
+
+    return maxaro
+
+
+def main():
+    """ Main function
+
+    Runs:
+        - get_data
+        - visit_product_page
+        - create_dataframe
+    """
+    swnl, product_urls = get_data("maxaro")
+    visit_product_page(5, swnl, product_urls, product_specs_maxaro)
+    create_dataframe(all_rows)
+
+
+if __name__ == "__main__":
+    all_rows = []
+    main()
