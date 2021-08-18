@@ -14,6 +14,8 @@ warnings.filterwarnings("ignore")
 
 load_dotenv(find_dotenv())
 
+all_rows = []
+
 
 def get_data(competitor: str) -> Tuple[list, list]:
     """ Extracts the data from the ftp server
@@ -108,6 +110,8 @@ def product_specs_maxaro(sku: str, url: str):
         row = [response.status_code, '', '', '', '', '', response.url]
         all_rows.append(row)
 
+    return all_rows
+
 
 def create_dataframe(all_rows: list) -> pd.DataFrame:
     """ Creates a dataframe
@@ -140,11 +144,11 @@ def main():
         - visit_product_page
         - create_dataframe
     """
+
     swnl, product_urls = get_data("maxaro")
     visit_product_page(5, swnl, product_urls, product_specs_maxaro)
     create_dataframe(all_rows)
 
 
 if __name__ == "__main__":
-    all_rows = []
     main()

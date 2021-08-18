@@ -3,6 +3,7 @@ from src.tegeldepot import main as run_tegeldepot
 from src.sanitairkamer import main as run_sanitairkamer
 from src.x2o import main as run_x2o
 import logging
+from time import sleep
 
 
 def create_logger() -> logging.Logger:
@@ -29,10 +30,13 @@ def main():
 
     logger.info('maxaro')
     run_maxaro()
+    sleep(3)
     logger.info('tegeldepot')
     run_tegeldepot()
+    sleep(3)
     logger.info('sanitairkamer')
     run_sanitairkamer()
+    sleep(3)
     logger.info('x2o')
     run_x2o()
 

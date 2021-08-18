@@ -7,6 +7,8 @@ from src.maxaro import visit_product_page, start_session, get_data
 
 warnings.filterwarnings("ignore")
 
+all_rows = []
+
 
 def get_price_tegeldepot(response) -> float:
     """ Extracts the price from the product
@@ -141,5 +143,4 @@ def main():
 
 
 if __name__ == "__main__":
-    all_rows = []
     main()

@@ -6,8 +6,10 @@ from src.maxaro import visit_product_page, start_session, get_data
 
 warnings.filterwarnings("ignore")
 
+all_rows = []
 
-def get_price_sanitairkamer(response):
+
+def get_price_sanitairkamer(response) -> float:
     """ Extracts the price from the product
 
     :param response: The connection with the website of the competitor
@@ -118,5 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    all_rows = []
     main()

@@ -13,7 +13,7 @@ from src.maxaro import get_data
 warnings.filterwarnings("ignore")
 
 
-def start_driver():
+def start_driver() -> webdriver.Chrome:
     """ Starts the driver that visits the pages
 
     :return: The driver
@@ -26,7 +26,7 @@ def start_driver():
     return driver
 
 
-def wait(driver, selector, element):
+def wait(driver, selector, element: str):
     """ Function that waits till element is detected
 
     :param driver: The driver that visits the pages
@@ -54,7 +54,6 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
     all_rows = []
     for sku, url in zip(swnl, product_urls_x2o):
 
-        print(url)
         row = [sku]
 
         driver.get(url)
