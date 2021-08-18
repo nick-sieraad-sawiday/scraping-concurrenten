@@ -108,7 +108,7 @@ def product_specs_tegeldepot(sku: str, url: str):
         if response.status_code != 200:
             sleep(10)
         print(response.status_code)
-        row = [sku, '', '', '', '', '', response.status_code, '', '', '', response.url]
+        row = [sku, '', '', '', '', response.status_code, '', '', '', response.url]
         all_rows.append(row)
 
 
