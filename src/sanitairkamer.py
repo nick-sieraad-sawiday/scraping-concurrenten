@@ -76,6 +76,8 @@ def product_specs_sanitairkamer(sku, url):
         price = get_price_sanitairkamer(response)
         row.append(price)
 
+        row.append(url)
+
         all_rows.append(row)
 
     except:
