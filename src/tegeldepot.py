@@ -3,7 +3,8 @@ from time import sleep
 
 import pandas as pd
 
-from src.maxaro import visit_product_page, start_session, get_data
+from src.maxaro import visit_product_page, start_session
+from connections import get_data
 
 warnings.filterwarnings("ignore")
 

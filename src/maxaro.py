@@ -1,36 +1,14 @@
-import os
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
-from typing import Tuple
 
 import pandas as pd
-from dotenv import load_dotenv, find_dotenv
 from requests_html import HTMLSession
-
-from connections import load_ftp_excel
+from connections import get_data
 
 warnings.filterwarnings("ignore")
 
-load_dotenv(find_dotenv())
-
 all_rows = []
-
-
-def get_data(competitor: str) -> Tuple[list, list]:
-    """ Extracts the data from the ftp server
-    It contains a table with our products with alternatives from the competitors
-
-    :return: (1) List with the url's of the products of the competitor (2) List with our sku's
-    """
-    private_label_conc = load_ftp_excel(
-        "private_label_omzet.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
-    )
-    df = private_label_conc[private_label_conc[competitor] != "geen alternatief"]
-    product_urls = list(df[competitor].dropna())
-    swnl = list(df["productcode_match"][:len(product_urls)])
-
-    return swnl, product_urls
 
 
 def get_price_maxaro(response) -> float:

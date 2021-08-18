@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from src.maxaro import get_data
+from connections import get_data
 
 warnings.filterwarnings("ignore")
 
