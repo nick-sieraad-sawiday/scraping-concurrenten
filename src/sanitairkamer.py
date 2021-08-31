@@ -4,7 +4,7 @@ from time import sleep
 
 import pandas as pd
 from src.maxaro import visit_product_page, start_session
-from src.connections import get_data
+from src.connections import get_data, write_excel
 
 warnings.filterwarnings("ignore")
 
@@ -121,11 +121,9 @@ def main():
     swnl, product_urls = get_data("sanitairkamer")
     visit_product_page(5, swnl, product_urls, product_specs_sanitairkamer)
     sanitairkamer = create_dataframe(all_rows)
-    week = str(datetime.now().date().isocalendar()[1])
-    sanitairkamer.to_excel(
-        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer_week_" +
-        week + ".xlsx", index=False
-    )
+    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
+    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx",
+                sheet_name, sanitairkamer)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from src.connections import get_data
+from src.connections import get_data, write_excel
 
 warnings.filterwarnings("ignore")
 
@@ -136,11 +136,9 @@ def main():
     driver = start_driver()
     all_rows = get_products_x2o(driver, swnl, product_urls_x2o)
     x2o = create_dataframe(all_rows)
-    week = str(datetime.now().date().isocalendar()[1])
-    x2o.to_excel(
-        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o_week_" +
-        week + ".xlsx", index=False
-    )
+    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
+    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx",
+                sheet_name, x2o)
 
 
 if __name__ == "__main__":

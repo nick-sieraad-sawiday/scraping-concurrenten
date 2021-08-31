@@ -51,3 +51,18 @@ def get_data(competitor: str) -> Tuple[list, list]:
     swnl = list(df["productcode_match"][:len(product_urls)])
 
     return swnl, product_urls
+
+
+def write_excel(filename: str, sheet_name: str, dataframe: pd.DataFrame):
+    """
+    Saves the alternatives with their marge_abs and a sheet that defines is a product is org or alternative.
+    This excel file is used to create a dashboard in Tableau.
+
+    :param filename: The name of the file you want to save the sheet on
+    :param sheet_name: How you want to name the sheet
+    :param dataframe: The dataframe you want to save
+    """
+
+    with pd.ExcelWriter(filename, engine="openpyxl", mode="a") as writer:
+        dataframe.to_excel(writer, sheet_name=sheet_name, index=False)
+        writer.save()
