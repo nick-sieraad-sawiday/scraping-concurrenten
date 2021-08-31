@@ -1,4 +1,5 @@
 import warnings
+from datetime import datetime
 from time import sleep
 
 import pandas as pd
@@ -144,8 +145,10 @@ def main():
     swnl, product_urls = get_data("tegeldepot")
     visit_product_page(5, swnl, product_urls, product_specs_tegeldepot)
     tegeldepot = create_dataframe(all_rows)
+    week = str(datetime.now().date().isocalendar()[1])
     tegeldepot.to_excel(
-        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx", index=False
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot_week_" +
+        week + ".xlsx", index=False
     )
 
 

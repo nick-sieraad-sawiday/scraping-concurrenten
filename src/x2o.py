@@ -1,4 +1,5 @@
 import warnings
+from datetime import datetime
 from time import sleep
 
 import pandas as pd
@@ -135,8 +136,10 @@ def main():
     driver = start_driver()
     all_rows = get_products_x2o(driver, swnl, product_urls_x2o)
     x2o = create_dataframe(all_rows)
+    week = str(datetime.now().date().isocalendar()[1])
     x2o.to_excel(
-        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx", index=False
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o_week_" +
+        week + ".xlsx", index=False
     )
 
 

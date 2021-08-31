@@ -1,6 +1,7 @@
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+from datetime import datetime
 
 import pandas as pd
 from requests_html import HTMLSession
@@ -123,8 +124,10 @@ def main():
     swnl, product_urls = get_data("maxaro")
     visit_product_page(5, swnl, product_urls, product_specs_maxaro)
     maxaro = create_dataframe(all_rows)
+    week = str(datetime.now().date().isocalendar()[1])
     maxaro.to_excel(
-        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx", index=False
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro_week_" + week + ".xlsx",
+        index=False
     )
 
 
