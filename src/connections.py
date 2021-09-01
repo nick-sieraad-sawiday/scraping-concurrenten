@@ -47,8 +47,9 @@ def get_data(competitor: str) -> Tuple[list, list]:
         "private_label_omzet.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
     )
     df = private_label_conc[private_label_conc[competitor] != "geen alternatief"]
-    product_urls = list(df[competitor].dropna())
-    swnl = list(df["productcode_match"][:len(product_urls)])
+    df = df[df[competitor].notna()]
+    product_urls = list(df[competitor])
+    swnl = list(df["productcode_match"])
 
     return swnl, product_urls
 
