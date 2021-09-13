@@ -148,7 +148,9 @@ def main(omnia):
     tegeldepot = create_dataframe(all_rows)
     tegeldepot = tegeldepot[["sku", "prijs_tegeldepot", "url_tegeldepot", "datum"]]
     tegeldepot = tegeldepot.merge(omnia, on="sku", how="left")
-    tegeldepot.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx")
+    tegeldepot.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

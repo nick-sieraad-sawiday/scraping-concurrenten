@@ -21,9 +21,11 @@ def load_price_competitors():
 
 def combine_competitors_today(maxaro, tegeldepot, sanitairkamer, x2o):
 
-    price_swnl_pl_today = maxaro.merge(tegeldepot, on=["sku", "datum", "prijs_swnl", "levertijd_swnl"], how="outer")
-    price_swnl_pl_today = price_swnl_pl_today.merge(sanitairkamer, on=["sku", "datum", "prijs_swnl", "levertijd_swnl"], how="outer")
-    price_swnl_pl_today = price_swnl_pl_today.merge(x2o, on=["sku", "datum", "prijs_swnl", "levertijd_swnl"], how="outer")
+    on = ["sku", "datum", "prijs_swnl", "levertijd_swnl", "topLevelCategory", "midLevelCategory",
+          "LowLevelCategory", "productType"]
+    price_swnl_pl_today = maxaro.merge(tegeldepot, on=on, how="outer")
+    price_swnl_pl_today = price_swnl_pl_today.merge(sanitairkamer, on=on, how="outer")
+    price_swnl_pl_today = price_swnl_pl_today.merge(x2o, on=on, how="outer")
 
     return price_swnl_pl_today
 

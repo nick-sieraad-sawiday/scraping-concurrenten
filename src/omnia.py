@@ -97,7 +97,8 @@ def main():
                            user='omnia', passwd='c4KZEs+gs-J9@UYX')
 
     all_df["swnl"]["sku"] = all_df["swnl"]["sku"].str.upper()
-    omnia = all_df["swnl"][["sku", "sellingPrice", 'deliveryTime']]
+    omnia = all_df["swnl"][["sku", "sellingPrice", "deliveryTime", "topLevelCategory", "midLevelCategory",
+                            "LowLevelCategory", "productType"]]
     omnia = omnia.rename(columns={"sellingPrice": "prijs_swnl", "deliveryTime": "levertijd_swnl"})
 
     return omnia

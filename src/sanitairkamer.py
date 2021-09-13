@@ -125,7 +125,9 @@ def main(omnia):
     sanitairkamer = create_dataframe(all_rows)
     sanitairkamer = sanitairkamer[["sku", "prijs_sanitairkamer", "url_sanitairkamer", "datum"]]
     sanitairkamer = sanitairkamer.merge(omnia, on="sku", how="left")
-    sanitairkamer.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx")
+    sanitairkamer.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

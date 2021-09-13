@@ -146,7 +146,9 @@ def main(omnia):
     maxaro = create_dataframe(all_rows)
     maxaro = maxaro[["sku", "prijs_maxaro", "url_maxaro", "datum"]]
     maxaro = maxaro.merge(omnia, on="sku", how="left")
-    maxaro.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx")
+    maxaro.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

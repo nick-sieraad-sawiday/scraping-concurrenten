@@ -140,7 +140,9 @@ def main(omnia):
     x2o = create_dataframe(all_rows)
     x2o = x2o[["sku", "prijs_x2o", "url_x2o", "datum"]]
     x2o = x2o.merge(omnia, on="sku", how="left")
-    x2o.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx")
+    x2o.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx", index=False
+    )
 
 
 if __name__ == "__main__":

@@ -46,6 +46,7 @@ def get_data(competitor: str) -> Tuple[list, list]:
     private_label_conc = load_ftp_excel(
         "private_label_omzet.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
     )
+    private_label_conc["productcode_match"] = private_label_conc["productcode_match"].str.upper()
     df = private_label_conc[private_label_conc[competitor] != "geen alternatief"]
     df = df[df[competitor].notna()]
     product_urls = list(df[competitor])
