@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from src.connections import get_data, write_excel
+from src.maxaro import add_to_all
 
 warnings.filterwarnings("ignore")
 
@@ -112,19 +113,20 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
 
 
 def create_dataframe(all_rows: list) -> pd.DataFrame:
-    columns_x2o = ['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'merk', 'serie', 'ean', 'art_nr_conc',
-                   'levertijd', 'url']
+    columns_x2o = ['sku', 'naam', 'prijs_x2o', 'main_categorie', 'sub_categorie', 'merk', 'serie', 'ean', 'art_nr_conc',
+                   'levertijd_x2o', 'url_x2o']
     x2o = pd.DataFrame(all_rows, columns=columns_x2o)
+    x2o["datum"] = datetime.today().date().strftime("%d-%m-%Y")
     x2o = x2o[
         ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie',
-         'prijs', 'levertijd', 'url']
+         'prijs_x2o', 'levertijd_x2o', 'url_x2o', "datum"]
     ]
-    x2o['prijs'] = x2o['prijs'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
+    x2o['prijs_x2o'] = x2o['prijs_x2o'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
 
     return x2o
 
 
-def main():
+def main(omnia):
     """ Main function
 
     Runs:
@@ -136,9 +138,9 @@ def main():
     driver = start_driver()
     all_rows = get_products_x2o(driver, swnl, product_urls_x2o)
     x2o = create_dataframe(all_rows)
-    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
-    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx",
-                sheet_name, x2o)
+    x2o = x2o[["sku", "prijs_x2o", "url_x2o", "datum"]]
+    x2o = x2o.merge(omnia, on="sku", how="left")
+    x2o.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\x2o.xlsx")
 
 
 if __name__ == "__main__":

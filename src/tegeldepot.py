@@ -4,7 +4,7 @@ from time import sleep
 
 import pandas as pd
 
-from src.maxaro import visit_product_page, start_session
+from src.maxaro import visit_product_page, start_session, add_to_all
 from src.connections import get_data, write_excel
 
 warnings.filterwarnings("ignore")
@@ -123,18 +123,19 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     :return: A dataframe that contains the product info of the competitor
     """
     tegeldepot = pd.DataFrame(all_rows,
-                              columns=['sku', 'naam', 'prijs', 'main_categorie', 'sub_categorie', 'art_nr_tegeldepot',
-                                       'ean', 'merk', 'serie', 'url'])
-    tegeldepot['levertijd'] = [''] * len(tegeldepot)
+                              columns=['sku', 'naam', 'prijs_tegeldepot', 'main_categorie', 'sub_categorie', 'art_nr_tegeldepot',
+                                       'ean', 'merk', 'serie', 'url_tegeldepot'])
+    tegeldepot['levertijd_tegeldepot'] = [''] * len(tegeldepot)
+    tegeldepot["datum"] = datetime.today().date().strftime("%d-%m-%Y")
     tegeldepot = tegeldepot[
-        ['sku', 'art_nr_tegeldepot', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-         'levertijd', 'url']
+        ['sku', 'art_nr_tegeldepot', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs_tegeldepot',
+         'levertijd_tegeldepot', 'url_tegeldepot', "datum"]
     ]
 
     return tegeldepot
 
 
-def main():
+def main(omnia):
     """ Main function
 
     Runs:
@@ -145,9 +146,9 @@ def main():
     swnl, product_urls = get_data("tegeldepot")
     visit_product_page(5, swnl, product_urls, product_specs_tegeldepot)
     tegeldepot = create_dataframe(all_rows)
-    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
-    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx",
-                sheet_name, tegeldepot)
+    tegeldepot = tegeldepot[["sku", "prijs_tegeldepot", "url_tegeldepot", "datum"]]
+    tegeldepot = tegeldepot.merge(omnia, on="sku", how="left")
+    tegeldepot.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\tegeldepot.xlsx")
 
 
 if __name__ == "__main__":

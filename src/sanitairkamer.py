@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 
 import pandas as pd
-from src.maxaro import visit_product_page, start_session
+from src.maxaro import visit_product_page, start_session, add_to_all
 from src.connections import get_data, write_excel
 
 warnings.filterwarnings("ignore")
@@ -96,21 +96,23 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
     :return: A dataframe that contains the product info of the competitor
     """
     sanitairkamer = pd.DataFrame(
-        all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs', 'url']
+        all_rows, columns=['sku', 'naam', 'art_nr_sanitairkamer', 'merk', 'serie', 'prijs_sanitairkamer',
+                           'url_sanitairkamer']
     )
     sanitairkamer['ean'] = [''] * len(sanitairkamer)
     sanitairkamer['main_categorie'] = [''] * len(sanitairkamer)
     sanitairkamer['sub_categorie'] = [''] * len(sanitairkamer)
-    sanitairkamer['levertijd'] = [''] * len(sanitairkamer)
+    sanitairkamer['levertijd_sanitairkamer'] = [''] * len(sanitairkamer)
+    sanitairkamer["datum"] = datetime.today().date().strftime("%d-%m-%Y")
     sanitairkamer = sanitairkamer[
-        ['sku', 'art_nr_sanitairkamer', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie', 'prijs',
-         'levertijd', 'url']
+        ['sku', 'art_nr_sanitairkamer', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie',
+         'prijs_sanitairkamer', 'levertijd_sanitairkamer', 'url_sanitairkamer', "datum"]
     ]
 
     return sanitairkamer
 
 
-def main():
+def main(omnia):
     """ Main function
 
     Runs:
@@ -121,9 +123,9 @@ def main():
     swnl, product_urls = get_data("sanitairkamer")
     visit_product_page(5, swnl, product_urls, product_specs_sanitairkamer)
     sanitairkamer = create_dataframe(all_rows)
-    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
-    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx",
-                sheet_name, sanitairkamer)
+    sanitairkamer = sanitairkamer[["sku", "prijs_sanitairkamer", "url_sanitairkamer", "datum"]]
+    sanitairkamer = sanitairkamer.merge(omnia, on="sku", how="left")
+    sanitairkamer.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\sanitairkamer.xlsx")
 
 
 if __name__ == "__main__":

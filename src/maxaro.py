@@ -93,28 +93,48 @@ def product_specs_maxaro(sku: str, url: str):
 
 
 def create_dataframe(all_rows: list) -> pd.DataFrame:
-    """ Creates a dataframe
+    """Creates a dataframe
 
     :param all_rows: The extracted products from the competitor
     :return: A dataframe that contains the product info of the competitor
     """
     maxaro = pd.DataFrame(
-        all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie', 'prijs', 'url']
+        all_rows, columns=['sku', 'art_nr_maxaro', 'naam', 'main_categorie', 'sub_categorie',
+                           'prijs_maxaro', 'url_maxaro']
     )
     maxaro['ean'] = [''] * len(maxaro)
     maxaro['merk'] = ['Maxaro'] * len(maxaro)
     maxaro['serie'] = [''] * len(maxaro)
-    maxaro['levertijd'] = [''] * len(maxaro)
+    maxaro['levertijd_maxaro'] = [''] * len(maxaro)
+    maxaro["datum"] = datetime.today().date().strftime("%d-%m-%Y")
     maxaro = maxaro[
         ['sku', 'art_nr_maxaro', 'ean', 'naam', 'merk', 'serie', 'main_categorie',
-         'sub_categorie', 'prijs', 'levertijd', 'url']
+         'sub_categorie', 'prijs_maxaro', 'levertijd_maxaro', 'url_maxaro', "datum"]
     ]
 
     return maxaro
 
 
-def main():
-    """ Main function
+def add_to_all(dataframe: pd.DataFrame):
+    """Adds the prices of the competitors' from today to the complete table
+
+    :param dataframe: The competitor
+    """
+
+    price_swnl_pl_vs_price_competitors = pd.read_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\" +
+        "outputs\\price_swnl_PL_vs_competitors.xlsx"
+    )
+
+    price_swnl_pl_vs_price_competitors = price_swnl_pl_vs_price_competitors.append(dataframe)
+    price_swnl_pl_vs_price_competitors.to_excel(
+        "C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\" +
+        "outputs\\price_swnl_PL_vs_competitors.xlsx", index=False
+    )
+
+
+def main(omnia):
+    """Main function
 
     Runs:
         - get_data
@@ -124,9 +144,9 @@ def main():
     swnl, product_urls = get_data("maxaro")
     visit_product_page(5, swnl, product_urls, product_specs_maxaro)
     maxaro = create_dataframe(all_rows)
-    sheet_name = "Week_" + str(datetime.now().date().isocalendar()[1])
-    write_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx",
-                sheet_name, maxaro)
+    maxaro = maxaro[["sku", "prijs_maxaro", "url_maxaro", "datum"]]
+    maxaro = maxaro.merge(omnia, on="sku", how="left")
+    maxaro.to_excel("C:\\Users\\nick.sieraad\\Documents\\Projects\\scraping-concurrenten\\outputs\\maxaro.xlsx")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
 import logging
 from time import sleep
 
+from src.omnia import main as run_omnia
 from src.maxaro import main as run_maxaro
 from src.sanitairkamer import main as run_sanitairkamer
 from src.tegeldepot import main as run_tegeldepot
 from src.x2o import main as run_x2o
+from src.combine import main as run_combine
 
 
 def create_logger() -> logging.Logger:
@@ -28,17 +30,22 @@ def create_logger() -> logging.Logger:
 def main():
     logger = create_logger()
 
+    logger.info('omnia')
+    omnia = run_omnia()
+    sleep(3)
     logger.info('maxaro')
-    run_maxaro()
+    run_maxaro(omnia)
     sleep(3)
     logger.info('sanitairkamer')
-    run_sanitairkamer()
+    run_sanitairkamer(omnia)
     sleep(3)
     logger.info('tegeldepot')
-    run_tegeldepot()
+    run_tegeldepot(omnia)
     sleep(3)
     logger.info('x2o')
-    run_x2o()
+    run_x2o(omnia)
+    logger.info('combine')
+    run_combine()
 
 
 if __name__ == '__main__':
