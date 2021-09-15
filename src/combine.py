@@ -52,6 +52,7 @@ def calculate_delivery_in_days(price_swnl_pl_today):
             levertijd_days.append('')
 
     price_swnl_pl_today['levertijd_days'] = levertijd_days
+    del price_swnl_pl_today["levertijd_swnl"]
 
     return price_swnl_pl_today
 
