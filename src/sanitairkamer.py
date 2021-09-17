@@ -3,8 +3,8 @@ from datetime import datetime
 from time import sleep
 
 import pandas as pd
-from src.maxaro import visit_product_page, start_session, add_to_all
-from src.connections import get_data, write_excel
+from src.maxaro import visit_product_page, start_session
+from src.connections import get_data
 
 warnings.filterwarnings("ignore")
 

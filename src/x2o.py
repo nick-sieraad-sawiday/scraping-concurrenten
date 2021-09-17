@@ -9,8 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from src.connections import get_data, write_excel
-from src.maxaro import add_to_all
+from src.connections import get_data
 
 warnings.filterwarnings("ignore")
 
@@ -121,6 +120,7 @@ def create_dataframe(all_rows: list) -> pd.DataFrame:
         ['sku', 'art_nr_conc', 'ean', 'naam', 'merk', 'serie', 'main_categorie', 'sub_categorie',
          'prijs_x2o', 'levertijd_x2o', 'url_x2o', "datum"]
     ]
+    x2o = x2o[x2o['prijs_x2o'] != ""]
     x2o['prijs_x2o'] = x2o['prijs_x2o'].str.replace('€ ', '').str.replace('.', '').str.replace(',', '.').astype(float)
 
     return x2o

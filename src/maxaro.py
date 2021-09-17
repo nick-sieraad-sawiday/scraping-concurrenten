@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pandas as pd
 from requests_html import HTMLSession
-from src.connections import get_data, write_excel
+from src.connections import get_data
 
 warnings.filterwarnings("ignore")
 

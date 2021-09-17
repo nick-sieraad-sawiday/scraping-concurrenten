@@ -21,8 +21,7 @@ def parse_xml(xml_file, df_cols):
     rows = []
 
     for node in xroot:
-        res = []
-        res.append(node.attrib.get(df_cols[0]))
+        res = [node.attrib.get(df_cols[0])]
         for el in df_cols[1:]:
             if node is not None and node.find(el) is not None:
                 res.append(node.find(el).text)
@@ -106,4 +105,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
