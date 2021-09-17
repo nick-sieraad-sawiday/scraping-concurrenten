@@ -17,18 +17,7 @@ def get_price_sanitairkamer(response) -> float:
     :param response: The connection with the website of the competitor
     :return: The price of the product of the competitor
     """
-    try:
-        price = response.html.find('.minimal-price')[0].text.split(' ')[1]
-    except:
-        try:
-            price = response.html.find('.regular-price')[0].text
-        except:
-            price = response.html.find('.special-price')[0].text.split(' ')[1]
-
-    if '-' in price:
-        price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace('.', '').replace(',-', '.'))
-    else:
-        price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace('.', '').replace(',', '.'))
+    price = float(response.html.xpath("//span[@itemprop='price']/@content")[0])
 
     return price
 
