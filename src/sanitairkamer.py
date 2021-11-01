@@ -73,7 +73,7 @@ def product_specs_sanitairkamer(sku, url):
     except:
         if response.status_code != 200:
             sleep(10)
-        print(response.status_code)
+        print(response.status_code, response.url)
         row = [sku, '', response.status_code, '', '', '', response.url]
         all_rows.append(row)
 
