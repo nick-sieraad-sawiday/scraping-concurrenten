@@ -101,7 +101,10 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
         sku = driver.find_elements_by_xpath("//*[contains(@id,'WebSKU')]")[0].get_attribute('id').split('-')[1]
         row.append(sku)
 
-        delivery_time = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
+        try:
+            delivery_time = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
+        except:
+            delivery_time = ""
         row.append(delivery_time)
 
         row.append(url)
