@@ -17,7 +17,7 @@ def get_price_sanitairkamer(response) -> float:
     :param response: The connection with the website of the competitor
     :return: The price of the product of the competitor
     """
-    price = float(response.html.xpath("//span[@itemprop='price']/@content")[0])
+    price = float(response.html.xpath("//span[@data-price-type='finalPrice']/@data-price-amount")[0])
 
     return price
 
@@ -37,7 +37,6 @@ def product_specs_sanitairkamer(sku, url):
 
         name = response.html.find('.product-page__title')[0].text.split("\nArtikelnummer: ")[0]
         row.append(name)
-        print(name)
 
         # product specs
         te = response.html.find('.additional-attributes-wrapper')[0].text.split('\n')
