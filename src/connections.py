@@ -44,7 +44,7 @@ def get_data(competitor: str) -> Tuple[list, list]:
     :return: (1) List with the url's of the products of the competitor (2) List with our sku's
     """
     private_label_conc = load_ftp_excel(
-        "private_label_omzet.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
+        "private_label_alternatieven_concurrenten.xlsx", os.getenv("FTP_LINK"), os.getenv("USER"), os.getenv("PASSWD"), os.getenv("CWD")
     )
     private_label_conc["productcode_match"] = private_label_conc["productcode_match"].str.upper()
     df = private_label_conc[private_label_conc[competitor] != "geen alternatief"]
