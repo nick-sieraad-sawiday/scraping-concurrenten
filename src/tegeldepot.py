@@ -26,8 +26,10 @@ def get_price_tegeldepot(response):
         except:
             price = response.html.find('.price-holder')[0].text.split(' ')[1]
 
-    if '-' in price:
+    if '-' in price and "." not in price:
         price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace(',-', '.'))
+    elif "." in price:
+        price = float(price.replace(u'\xa0', u' ').replace('€ ', '').replace(',-', '.').replace(".", ""))
     else:
         price = float(price.replace(u'\xa0', u' ').replace('.', '').replace('€ ', '').replace(',', '.'))
 
