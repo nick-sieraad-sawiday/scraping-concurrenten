@@ -17,7 +17,7 @@ def get_price_sanitairkamer(response) -> float:
     :param response: The connection with the website of the competitor
     :return: The price of the product of the competitor
     """
-    price = float(response.html.xpath("//span[@itemprop='price']/@content")[0])
+    price = float(response.html.xpath("//span[@data-price-type='finalPrice']/@data-price-amount")[0])
 
     return price
 
@@ -28,17 +28,18 @@ def product_specs_sanitairkamer(sku, url):
     :param sku: Our sku
     :param url: The url of the alternative product of the competitor
     """
+
     try:
         # starts session and 'visits' product page
         response = start_session(url)
 
         row = [sku]
 
-        name = response.html.find('.product-name')[0].text
+        name = response.html.find('.product-page__title')[0].text.split("\nArtikelnummer: ")[0]
         row.append(name)
 
         # product specs
-        te = response.html.find('.data-table')[0].text.split('\n')
+        te = response.html.find('.additional-attributes-wrapper')[0].text.split('\n')
         if 'Artikelnummer' in te:
             for t in range(len(te)):
                 if te[t] == 'Artikelnummer':
@@ -66,15 +67,13 @@ def product_specs_sanitairkamer(sku, url):
         price = get_price_sanitairkamer(response)
         row.append(price)
 
-        row.append(url)
-
         all_rows.append(row)
 
     except:
         if response.status_code != 200:
             sleep(10)
         print(response.status_code, response.url)
-        row = [sku, '', response.status_code, '', '', '', response.url]
+        row = [response.status_code, '', '', '', '', response.url]
         all_rows.append(row)
 
 
