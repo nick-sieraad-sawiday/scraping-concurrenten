@@ -89,17 +89,29 @@ def get_products_x2o(driver, swnl: list, product_urls_x2o: list) -> list:
         row.append(main_cat)
         row.append(sub_cat)
 
-        brand = driver.find_elements_by_xpath("//*[contains(@id,'Merk')]")[0].get_attribute('id').split('-')[1]
-        row.append(brand)
+        try:
+            brand = driver.find_elements_by_xpath("//*[contains(@id,'Merk')]")[0].get_attribute('id').split('-')[1]
+            row.append(brand)
+        except:
+            row.append("")
 
-        serie = driver.find_elements_by_xpath("//*[contains(@id,'Reeks')]")[0].get_attribute('id').split('-')[1]
-        row.append(serie)
+        try:
+            serie = driver.find_elements_by_xpath("//*[contains(@id,'Reeks')]")[0].get_attribute('id').split('-')[1]
+            row.append(serie)
+        except:
+            row.append("")
 
-        ean = driver.find_elements_by_xpath("//*[contains(@id,'Barcode')]")[0].get_attribute('id').split('-')[1]
-        row.append(ean)
+        try:
+            ean = driver.find_elements_by_xpath("//*[contains(@id,'Barcode')]")[0].get_attribute('id').split('-')[1]
+            row.append(ean)
+        except:
+            row.append("")
 
-        sku = driver.find_elements_by_xpath("//*[contains(@id,'WebSKU')]")[0].get_attribute('id').split('-')[1]
-        row.append(sku)
+        try:
+            sku = driver.find_elements_by_xpath("//*[contains(@id,'WebSKU')]")[0].get_attribute('id').split('-')[1]
+            row.append(sku)
+        except:
+            row.append("")
 
         try:
             delivery_time = driver.find_element_by_class_name("deliveryStatus-label-3ul").text
