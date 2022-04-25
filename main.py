@@ -46,6 +46,7 @@ def main():
     run_x2o(omnia)
     logger.info('combine')
     run_combine()
+    logger.info('scraping completed')
 
 
 if __name__ == '__main__':
